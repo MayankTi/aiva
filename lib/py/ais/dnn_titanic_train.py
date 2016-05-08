@@ -50,10 +50,10 @@ def train():
 
 
 # Uncomment to train it
-# train()
+train()
 
 # # save test data for fast loading in deploy
-# data_path = preprocess.abspath('data/titanic.csv')
-# df = pandas.read_csv(data_path)
-# train, test = cross_validation.train_test_split(df, test_size=0.2, random_state=42)
-# test.to_csv('data/titanic_test.csv', index=False)
+#data_path = preprocess.abspath('data/titanic.csv')
+#df = pandas.read_csv(data_path)
+#train, test = cross_validation.train_test_split(df, test_size=0.2, random_state=42)
+#test.to_csv('data/titanic_test.csv', index=False)

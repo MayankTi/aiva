@@ -8,7 +8,7 @@ var co = require('co')
 // This only updates fields and does not delete any, so that user node is save for other purposes.
 function serialize_users(slackUsers) {
   // get the list of users parsed by Slack adapter
-  // var slackUsers = robot.brain.data.users
+ var slackUsers = robot.brain.data.users
   // legalize it for KB use
   var Users = _.map(slackUsers, function(obj) {
     var lobj = cons.legalize(obj, 'id')
