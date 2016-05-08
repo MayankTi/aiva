@@ -49,6 +49,13 @@ fi
 # Keep-alive: update existing `sudo` time stamp until this script has finished
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
+# install npm global packages: forever, istanbul, ngrok
+echo "
+=> Ensuring you have forever, ngrok"
+npm list -g forever || sudo npm i -g forever
+npm list -g ngrok || sudo npm i -g ngrok
+npm list -g istanbul || sudo npm i -g istanbul
+# npm list -g --depth=0
 
 # determine if is Mac OSX, or Linux; then run accordingly
 if [ $(uname) == "Darwin" ];
@@ -90,6 +97,29 @@ export JAVA_HOME=\$(/usr/libexec/java_home)
 " >> ~/.bash_profile
 
 
+# install neo4j for brain
+echo "
+=> Ensuring you have neo4j"
+ninfo=$(brew info neo4j)
+nv="$(echo $ninfo | sed 's/\(.*\)\, dev.*/\1/')"
+if [ "$nv" ]; then echo $nv; else (
+brew install neo4j;
+source ~/.bash_profile
+echo "
+# Neo4j home path
+export NEO4J_HOME=$(neo4j-shell -c 'dbinfo -g Configuration dbms.directories.data' | grep -oE '\/.*lib.*?\/')" >> ~/.bash_profile
+source ~/.bash_profile
+
+# need to check this for existence too
+# Install the shell tool for import export
+curl -LOk http://dist.neo4j.org/jexp/shell/neo4j-shell-tools_2.2.zip && unzip neo4j-shell-tools_2.2.zip -d ${NEO4J_HOME}lib && rm neo4j-shell-tools_2.2.zip;
+  ); fi
+
+# change the default neo4j password
+neo4j start
+curl -X POST -d "password=0000" -u neo4j:neo4j http://localhost:7474/user/neo4j/password
+
+
 # install python3
 echo "
 => Ensuring you have python3"
@@ -107,27 +137,6 @@ sudo pip3 install -U pandas
 sudo pip3 install -U matplotlib
 sudo pip3 install -U https://storage.googleapis.com/tensorflow/mac/tensorflow-0.8.0-py3-none-any.whl
 
-
-# install neo4j for brain
-echo "
-=> Ensuring you have neo4j"
-ninfo=$(brew info neo4j)
-nv="$(echo $ninfo | sed 's/\(.*\)\, dev.*/\1/')"
-if [ "$nv" ]; then echo $nv; else (
-brew install neo4j;
-echo "
-# Neo4j home path
-export NEO4J_HOME=$(neo4j-shell -c 'dbinfo -g Kernel StoreDirectory' | grep -oE '\/.*lib.*?\/')" >> ~/.bash_profile
-source ~/.bash_profile
-
-# change the default neo4j password
-neo4j start
-curl -X POST -d "password=0000" -u neo4j:neo4j http://localhost:7474/user/neo4j/password
-
-# need to check this for existence too
-# Install the shell tool for import export
-curl -LOk http://dist.neo4j.org/jexp/shell/neo4j-shell-tools_2.2.zip && unzip neo4j-shell-tools_2.2.zip -d ${NEO4J_HOME}lib && rm neo4j-shell-tools_2.2.zip;
-	); fi
 
 
 # Install Ruby on Rails with rbenv
@@ -176,6 +185,28 @@ export JAVA_HOME=$jdkpath" >> ~/.bashrc;
 fi
 
 
+# install neo4j for brain
+echo "
+=> Ensuring you have neo4j"
+# write neo4j path if not exists
+if [ "$(neo4j status)" == "" ]; 
+  then (
+sudo apt-get -y install neo4j;
+source ~/.bashrc
+echo "
+# Neo4j home path
+export NEO4J_HOME=$(neo4j-shell -c 'dbinfo -g Configuration dbms.directories.data' | grep -oE '\/.*lib.*?\/')" >> ~/.bashrc
+source ~/.bashrc
+
+# Install the shell tool for import export
+curl -LOk http://dist.neo4j.org/jexp/shell/neo4j-shell-tools_2.2.zip && unzip neo4j-shell-tools_2.2.zip -d ${NEO4J_HOME}lib && rm neo4j-shell-tools_2.2.zip;
+); fi
+
+# change the default neo4j password
+neo4j start
+curl -X POST -d "password=0000" -u neo4j:neo4j http://localhost:7474/user/neo4j/password
+
+
 # install python3
 echo "
 => Ensuring you have python3"
@@ -196,30 +227,6 @@ sudo pip3 install -U scikit-learn
 sudo pip3 install -U pandas
 sudo apt-get -y install python-matplotlib
 sudo pip3 install -U https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.8.0-cp34-cp34m-linux_x86_64.whl
-
-
-# install neo4j for brain
-echo "
-=> Ensuring you have neo4j"
-# write neo4j path if not exists
-if [ "$(neo4j status)" == "" ]; 
-	then (
-sudo apt-get -y install neo4j;
-echo "
-# neo4j {start | stop | status}
-alias neo4j='service neo4j-service'
-
-# Neo4j home path
-export NEO4J_HOME=$(neo4j-shell -c 'dbinfo -g Kernel StoreDirectory' | grep -oE '\/.*lib.*?\/')" >> ~/.bashrc
-source ~/.bashrc
-
-# change the default neo4j password
-neo4j start
-curl -X POST -d "password=0000" -u neo4j:neo4j http://localhost:7474/user/neo4j/password
-
-# Install the shell tool for import export
-curl -LOk http://dist.neo4j.org/jexp/shell/neo4j-shell-tools_2.2.zip && unzip neo4j-shell-tools_2.2.zip -d ${NEO4J_HOME}lib && rm neo4j-shell-tools_2.2.zip;
-); fi
 
 
 # Install Ruby on Rails with rbenv
@@ -252,16 +259,6 @@ rbenv rehash
 );
 fi
 # OS split ends, continue
-
-
-# install npm global packages: forever
-echo "
-=> Ensuring you have forever"
-sudo npm i -g forever
-sudo npm i -g istanbul
-sudo npm i -g ngrok
-
-# npm list -g --depth=0
 
 echo "
 Dependencies setup complete.
