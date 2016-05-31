@@ -101,6 +101,7 @@ def handle(msg):
   to = msg.get('to') # the target module, e.g. hello
   intent = msg.get('intent') # the module's function, e.g. sayHi()
   reply = None
+  print ('message_py:' + msg)
   if to is not None and intent is not None:
     # try JSON or JSON.input as input
     try:
