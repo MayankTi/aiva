@@ -54,9 +54,13 @@
     "requireg": "^0.1.5",
     "socket.io": "^1.4.5",
     "socket.io-client": "^1.4.5",
-    "watson-developer-cloud": "^1.3.1"
+    "watson-developer-cloud": "^1.3.1",
+    "node-googleplaces": "latest",
+    "node-yelp": "latest",
+    "node-wikipedia": "latest"
   },
   "devDependencies": {
+    "babel-preset-es2015": "^6.9.0",
     "chai": "^3.4.1",
     "chai-as-promised": "^5.2.0",
     "co": "^4.6.0",
